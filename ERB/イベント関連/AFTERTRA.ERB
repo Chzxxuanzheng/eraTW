@@ -7,6 +7,7 @@
 #DIM 会ってない日数
 #DIM YANUSHI
 #DIM MAX_SHOOTER
+#DIM 擁有陰莖的對象
 PRINTL 一天结束了
 
 ;DLC相关↓
@@ -203,7 +204,7 @@ FOR LOCAL,0,CHARANUM
 	ENDIF
 	RESETCOLOR
 	 IF FLAG:妊娠開关 == 1 && (LOCAL || SELF_PREGNANCY)
-		SIF CFLAG:LOCAL:妊娠経過日数 == 0 && !FLAG:避妊 && !TCVAR:LOCAL:口服避孕薬 && TALENT:LOCAL:路人 != 2
+		SIF !FLAG:避妊 && !TCVAR:LOCAL:口服避孕薬 && TALENT:LOCAL:路人 != 2
 			CALL GET_CHILD(LOCAL)
 	ELSE
 	;
@@ -331,6 +332,13 @@ ENDIF
 BASE:MASTER:TSP = MAXBASE:MASTER:TSP
 
 IF TALENT:MASTER:2 & 2
+;------ ALTER 殘留精液
+	IF JYCL == 1 && TALENT:MASTER:120
+	 	TALENT:MASTER:濃厚精液殘留 = TALENT:MASTER:120
+	ELSE
+		TALENT:MASTER:濃厚精液殘留 = 0
+	ENDIF
+;------ END 殘留精液
 	IF BASE:MASTER:精力 == MAXBASE:MASTER:精力 && !GETBIT(TFLAG:一日一回,8)
 		FLAG:71 ++
 		IF FLAG:71 >= 5 && !RAND:3
@@ -365,7 +373,46 @@ IF TALENT:MASTER:2 & 2
 	ENDIF
 ENDIF
 
-
+;------ ALTER 殘留精液
+IF JYCL == 1
+	FOR 擁有陰莖的對象,1,CHARANUM
+		IF HAS_PENIS(擁有陰莖的對象)
+	;------ ALTER 殘留精液
+			IF JYCL == 1 && TALENT:擁有陰莖的對象:120
+				TALENT:擁有陰莖的對象:濃厚精液殘留 = TALENT:擁有陰莖的對象:120
+			ELSE
+				TALENT:擁有陰莖的對象:濃厚精液殘留 = 0
+			ENDIF
+	;------ END 殘留精液
+			IF TALENT:擁有陰莖的對象:恋人
+				IF !RAND:4
+					TALENT:擁有陰莖的對象:120 = 1
+				ELSE
+					TALENT:擁有陰莖的對象:120 = 0
+				ENDIF
+			ELSEIF TALENT:擁有陰莖的對象:恋慕
+				IF !RAND:8
+					TALENT:擁有陰莖的對象:120 = 1
+				ELSE
+					TALENT:擁有陰莖的對象:120 = 0
+				ENDIF
+			ELSEIF TALENT:擁有陰莖的對象:思慕
+				IF !RAND:10
+					TALENT:擁有陰莖的對象:120 = 1
+				ELSE
+					TALENT:擁有陰莖的對象:120 = 0
+				ENDIF
+			ELSE
+				IF !RAND:20
+					TALENT:擁有陰莖的對象:120 = 1
+				ELSE
+					TALENT:擁有陰莖的對象:120 = 0
+				ENDIF
+			ENDIF
+		ENDIF
+	NEXT
+ENDIF
+;------ END 殘留精液
 
 CALL ONANISM
 
@@ -402,6 +449,7 @@ SIF FLAG:睡四小时
 FOR LOCAL,0,CHARANUM
 	;精液量リセット
 	CFLAG:LOCAL:(LOCAL + 2000) = 0
+	CFLAG:LOCAL:(LOCAL + 3000) = 0
 NEXT
 
 BEGIN ABLUP
